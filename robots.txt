@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://dacotahouse.github.io/tokimeki-sweets/sitemap.xml
