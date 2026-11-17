@@ -88,15 +88,14 @@ body = '''<section class="home-hero simple-hero" aria-labelledby="home-title">
   <img class="home-hero-image" src="haeru-main.webp" alt="桜の花と、タルトや華やかなお菓子を並べたイメージ" width="1752" height="897" fetchpriority="high">
 </section>
 <p class="image-note">メイン画像はイメージです。</p>
-<figure class="tea-message">
-  <img src="tea-message.jpg" width="1204" height="370" loading="lazy"
-       alt="スイーツには、毎日をちょっと幸せにしてくれる魔法があります。この図鑑が、あなたのお気に入りのスイーツを見つけるきっかけになれば嬉しいです。今日も、素敵なスイーツとの出会いがありますように。">
-  <figcaption><a href="tea-message.jpg" target="_blank" rel="noopener">メッセージ画像を拡大</a></figcaption>
-</figure>
 <section id="categories" class="home-section simple-collections">
   <div class="section-head"><h2>カテゴリーから選ぶ</h2></div>''' + categories() + '''
   <p class="image-note">カテゴリー画像はイメージです。</p>
 </section>
+<figure class="tea-message">
+  <img src="tea-message.jpg" width="1204" height="370" loading="lazy"
+       alt="スイーツには、毎日をちょっと幸せにしてくれる魔法があります。この図鑑が、あなたのお気に入りのスイーツを見つけるきっかけになれば嬉しいです。今日も、素敵なスイーツとの出会いがありますように。">
+</figure>
 <details class="home-section simple-search">
   <summary>商品名や素材で探す</summary>
   <label class="search-label" for="sweet-search">商品名・ブランド名・素材</label>

@@ -25,10 +25,8 @@
 .simple-hero .home-hero-copy { width: auto; padding: clamp(24px, 5vw, 52px); }
 .simple-hero h1 { font-size: clamp(26px, 3vw, 42px); line-height: 1.35; letter-spacing: .02em; }
 .simple-hero .home-hero-image { position: static; width: 100%; height: auto; object-fit: contain; }
-.tea-message { max-width: 1040px; margin: clamp(24px, 4vw, 48px) auto 0; }
+.tea-message { margin: clamp(24px, 4vw, 48px) 0 0; }
 .tea-message img { display: block; width: 100%; height: auto; border-radius: 12px; }
-.tea-message figcaption { text-align: right; font-size: 12px; }
-.tea-message figcaption a { display: inline-flex; min-height: 44px; align-items: center; text-underline-offset: 3px; }
 .simple-collections { margin-top: clamp(30px, 5vw, 54px); }
 .simple-collections .category-grid, .more-section .category-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
