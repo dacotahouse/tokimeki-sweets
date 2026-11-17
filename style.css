@@ -30,6 +30,8 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .simple-collections .category-card, .more-section .category-card { border-radius: 16px; }
+.simple-collections .category-banner { height: auto; padding: 0; }
+.simple-collections .category-banner img { display: block; width: 100%; height: auto; }
 .simple-collections .category-copy h3 { font-size: clamp(14px, 2vw, 20px); }
 .simple-search { margin: 32px 0; padding: 16px 18px; border: 1px solid var(--line); border-radius: 12px; }
 .simple-search summary { cursor: pointer; font-weight: 650; }
@@ -41,6 +43,6 @@
   .simple-hero { grid-template-columns: minmax(0, 1fr); }
   .simple-hero .home-hero-copy { padding: 24px 22px; text-align: center; }
   .simple-hero .home-hero-image { object-position: center; }
-  .simple-collections .category-photo { height: clamp(105px, 31vw, 174px); }
+  .simple-collections .category-grid { grid-template-columns: minmax(0, 1fr); }
   .more-section .category-grid { grid-template-columns: minmax(0, 1fr); }
 }

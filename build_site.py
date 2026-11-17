@@ -32,8 +32,35 @@ def card(k,n=0,context='',compact=False):
  p=P[k];data=f' data-price="{p["price"] or 0}"';badge=('期間・季節の販売商品' if p['seasonal'] else '秋冬に選びたい定番') if context=='season' else p['tag']
  price=f'<p class="price-guide">確認時の商品価格 <strong>{p["price"]:,}円</strong><small>税込・送料別途の場合あり／2026年11月16日確認</small></p>' if context=='price' else ''
  return f'<article class="product" id="product-{k}"{data}><div class="product-heading"><div class="product-kicker"><span>{n:02d}</span><span>{E(badge)}</span></div><p class="product-brand">{E(p["brand"])}</p><h2>{E(p["name"])}</h2><p class="product-catch">{E(p["catch"])}</p></div><div class="purchase" aria-label="{E(p["name"])}の楽天市場広告"><p class="ad-label">広告・楽天市場</p>{p["code"]}</div><div class="product-editorial">{price}<p>{E(p["description"])}</p><p class="product-note">{E(p["note"])}</p></div><a class="back-index" href="{chr(35)+("page-index" if context else "categories")}">一覧に戻る ↑</a></article>'
+# Optional artwork for category cards on the home page.
+HOME_CATEGORY_BANNERS = {
+    "haeru": ("category-haeru.jpg", 1086, 199),
+    "cute": ("category-cute.jpg", 1086, 200),
+}
+
+
+def category_card(collection, show_home_art):
+    slug, name, headline, _, cover, _ = collection
+    banner = HOME_CATEGORY_BANNERS.get(slug) if show_home_art else None
+    if banner:
+        path, width, height = banner
+        photo = (
+            f'<div class="category-photo category-banner"><img src="{E(path)}" alt="" '
+            f'width="{width}" height="{height}" loading="lazy"></div>'
+        )
+    else:
+        photo = f'<div class="category-photo">{img(cover)}</div>'
+    return (
+        f'<a class="category-card category-{slug}" href="{slug}.html">'
+        f'{photo}<div class="category-copy"><h3>{name} <span>↗</span></h3>'
+        f'<p>{headline}</p><span class="count">10のお菓子</span></div></a>'
+    )
+
+
 def categories(active=None):
- return '<div class="category-grid">'+''.join(f'<a class="category-card category-{c[0]}" href="{c[0]}.html"><div class="category-photo">{img(c[4])}</div><div class="category-copy"><h3>{c[1]} <span>↗</span></h3><p>{c[2]}</p><span class="count">10のお菓子</span></div></a>' for c in CATS if c[0]!=active)+'</div>'
+    cards = [category_card(c, show_home_art=active is None) for c in CATS if c[0] != active]
+    return '<div class="category-grid">' + ''.join(cards) + '</div>'
+
 for slug,name,headline,intro,cover,keys in CATS:
  body=f'<div class="breadcrumb"><a href="index.html">ホーム</a><span>／</span>{name}</div><section class="collection-hero"><div><p class="eyebrow">SWEETS COLLECTION</p><h1>{name}</h1><p class="collection-heading">{headline}</p><p>{intro}</p><a class="text-link" href="#page-index">10の商品を見る ↓</a></div><div class="collection-photo">{img(cover,lazy=False)}<span class="photo-caption">掲載商品の広告画像</span></div></section>'+adnote()
  if slug=='season':body+='<aside class="editorial-note"><strong>2026年 秋冬のセレクション</strong><p>前半6品は、販売ページに季節限定・期間限定・クリスマス仕様・干支パッケージの案内がある商品です。後半4品は、秋冬のお茶時間に選びたい定番品。限定品は販売終了・売り切れになる場合があります。</p></aside>'
@@ -63,7 +90,7 @@ body = '''<section class="home-hero simple-hero" aria-labelledby="home-title">
 <p class="image-note">メイン画像はAIで作成したイメージです。</p>
 <section id="categories" class="home-section simple-collections">
   <div class="section-head"><h2>カテゴリーから選ぶ</h2></div>''' + categories() + '''
-  <p class="image-note">カテゴリーの写真は、掲載商品の広告画像です。</p>
+  <p class="image-note">カテゴリーのバナーは、AIで作成したイメージです。</p>
 </section>
 <details class="home-section simple-search">
   <summary>商品名や素材で探す</summary>
