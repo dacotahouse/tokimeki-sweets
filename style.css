@@ -92,3 +92,7 @@
   .tea-feature h2 { margin-bottom: 11px; }
   .tea-feature-copy > p:not(.tea-feature-label) { font-size: 13px; }
 }
+
+.chocolate-hero { margin: 0 0 20px; }
+.chocolate-hero img { display: block; width: 100%; height: auto; border-radius: 16px; }
+#main:has(.chocolate-hero) .purchase a { display: inline-flex; align-items: center; min-height: 44px; overflow-wrap: anywhere; }
