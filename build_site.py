@@ -2,14 +2,20 @@ from pathlib import Path
 import json,html
 R=Path(__file__).resolve().parent;P={p['key']:p for p in json.loads((R/'catalog.json').read_text())}
 BASE='https://dacotahouse.github.io/tokimeki-sweets/'
-CATS=[
+COLLECTIONS=[
 ('haeru','映えるスイーツ','見た目に恋する、10のお菓子。','色、形、断面。思わず写真に残したくなる、お菓子の表情を集めました。','planet',['kuririn','mochi','morin','planet','petit-tart','cassata','mini-tart','fruit-tart','fukiyose','waffle']),
-('cute','キュートなお菓子','かわいい、を贈る。','動物の表情や小さな形に、ふっと笑顔になるお菓子を選びました。','animal-marshmallow',['panda-winter','animal-marshmallow','animal-manju','caffarel','mochi','flower-pop','mini-tart','petit-tart','parfait-bar','waffle']),
+('cute','キュートなお菓子','かわいい、を贈る。','動物の表情や小さな形に、ふっと笑顔になるお菓子を選びました。','animal-marshmallow',['animal-marshmallow','animal-manju','caffarel','flower-pop','parfait-bar','monaka','panda-winter','yoku-christmas','royce-winter','toraya-eto']),
 ('chocolate','チョコレート・洋菓子','お茶の時間が、待ち遠しい。','ひと粒のチョコから、切り分けるデザートまで。洋菓子の楽しみを少しずつ。','caffarel',['planet','lindt','royce-winter','henri-collection','yoku-christmas','cassata','waffle','flower-pop','petit-tart','fruit-tart']),
 ('wagashi','和菓子・和スイーツ','日本茶と、甘いひと息。','栗、抹茶、あんこ。おなじみの素材を、形や組み合わせの違いから選びます。','morin',['kuririn','mochi','morin','fukiyose','mikan','parfait-bar','toraya-eto','kurikinton','kuri-matcha-daifuku','monaka']),
 ('gift','ギフトスイーツ','ありがとうに、甘い彩りを。','相手の好みや、一緒に食べる人数を思い浮かべて。贈る時間まで楽しい一品を。','fukiyose',['henri-collection','toraya-eto','fukiyose','planet','fruit-tart','waffle','lindt','yoku-christmas','mochi','caffarel']),
 ('season','季節を楽しむスイーツ','秋から冬へ、お菓子も衣替え。','いまの限定パッケージと、秋冬のお茶時間に選びたい定番のお菓子を集めました。','panda-winter',['royce-winter','yoku-christmas','panda-winter','henri-collection','toraya-eto','kuri-matcha-daifuku','kuririn','kurikinton','caffarel','lindt']),
 ('price','価格別スイーツ','予算に合う、ときめきを。','小さなお礼から、きちんとした贈り物まで。確認時の商品価格を目安に探せます。','monaka',['monaka','royce-winter','animal-marshmallow','panda-winter','kurikinton','kuri-matcha-daifuku','yoku-christmas','caffarel','henri-collection','toraya-eto'])]
+# Add an existing collection slug here when its page is ready to be featured.
+PUBLISHED = ("haeru", "cute")
+CATS = [c for c in COLLECTIONS if c[0] in PUBLISHED]
+PRODUCT_COLLECTION = {key: c[0] for c in CATS for key in c[5]}
+assert len(CATS) == len(PUBLISHED) and all(len(c[5]) == 10 for c in CATS)
+assert len(PRODUCT_COLLECTION) == sum(len(c[5]) for c in CATS), "Products must be unique across published collections"
 E=lambda x:html.escape(str(x),quote=True)
 def img(k,cls='',lazy=True):
  p=P[k];return f'<img class="{cls}" src="{E(p["image"])}" alt="{E(p["brand"]+" "+p["name"])}" width="480" height="480" loading="{"lazy" if lazy else "eager"}">'
@@ -27,22 +33,64 @@ def card(k,n=0,context='',compact=False):
  price=f'<p class="price-guide">確認時の商品価格 <strong>{p["price"]:,}円</strong><small>税込・送料別途の場合あり／2026年11月16日確認</small></p>' if context=='price' else ''
  return f'<article class="product" id="product-{k}"{data}><div class="product-heading"><div class="product-kicker"><span>{n:02d}</span><span>{E(badge)}</span></div><p class="product-brand">{E(p["brand"])}</p><h2>{E(p["name"])}</h2><p class="product-catch">{E(p["catch"])}</p></div><div class="purchase" aria-label="{E(p["name"])}の楽天市場広告"><p class="ad-label">広告・楽天市場</p>{p["code"]}</div><div class="product-editorial">{price}<p>{E(p["description"])}</p><p class="product-note">{E(p["note"])}</p></div><a class="back-index" href="{chr(35)+("page-index" if context else "categories")}">一覧に戻る ↑</a></article>'
 def categories(active=None):
- return '<div class="category-grid">'+''.join(f'<a class="category-card category-{c[0]}" href="{c[0]}.html"><div class="category-photo">{img(c[4])}</div><div class="category-copy"><small>COLLECTION {i+1:02d}</small><h3>{c[1]} <span>↗</span></h3><p>{c[2]}</p><span class="count">10のお菓子</span></div></a>' for i,c in enumerate(CATS) if c[0]!=active)+'</div>'
+ return '<div class="category-grid">'+''.join(f'<a class="category-card category-{c[0]}" href="{c[0]}.html"><div class="category-photo">{img(c[4])}</div><div class="category-copy"><h3>{c[1]} <span>↗</span></h3><p>{c[2]}</p><span class="count">10のお菓子</span></div></a>' for c in CATS if c[0]!=active)+'</div>'
 for slug,name,headline,intro,cover,keys in CATS:
  body=f'<div class="breadcrumb"><a href="index.html">ホーム</a><span>／</span>{name}</div><section class="collection-hero"><div><p class="eyebrow">SWEETS COLLECTION</p><h1>{name}</h1><p class="collection-heading">{headline}</p><p>{intro}</p><a class="text-link" href="#page-index">10の商品を見る ↓</a></div><div class="collection-photo">{img(cover,lazy=False)}<span class="photo-caption">掲載商品の広告画像</span></div></section>'+adnote()
  if slug=='season':body+='<aside class="editorial-note"><strong>2026年 秋冬のセレクション</strong><p>前半6品は、販売ページに季節限定・期間限定・クリスマス仕様・干支パッケージの案内がある商品です。後半4品は、秋冬のお茶時間に選びたい定番品。限定品は販売終了・売り切れになる場合があります。</p></aside>'
  if slug=='price':body+='<aside class="editorial-note"><strong>価格は、比較のための目安です。</strong><p>2026年11月16日に、もしもアフィリエイトの商品検索で表示された税込商品価格です。送料を含む総額や、選択するセットによって金額が変わる場合があります。購入前に販売ページでご確認ください。</p></aside><div class="budget-filters" aria-label="予算で絞り込む"><button type="button" data-budget="all" aria-pressed="true">すべて</button><button type="button" data-budget="1000">1,000円以下</button><button type="button" data-budget="2000">2,000円以下</button><button type="button" data-budget="3000">3,000円以下</button><button type="button" data-budget="over">3,001円以上</button></div><p id="budget-status" class="result-status" aria-live="polite"></p>'
- body+='<nav id="page-index" class="page-index" aria-label="このページの商品"><h2>気になるお菓子から</h2><ol>'+''.join(f'<li><a href="#product-{k}"><span>{i+1:02d}</span>{E(P[k]["name"])}</a></li>' for i,k in enumerate(keys))+'</ol></nav><div class="product-grid">'+''.join(card(k,i+1,slug) for i,k in enumerate(keys))+'</div><section class="more-section"><p class="eyebrow">FIND YOUR FAVORITE</p><h2>ほかの気分でも、探してみる。</h2>'+categories(slug)+'</section>'
+ body+='<nav id="page-index" class="page-index" aria-label="このページの商品"><h2>気になるお菓子から</h2><ol>'+''.join(f'<li><a href="#product-{k}"><span>{i+1:02d}</span>{E(P[k]["name"])}</a></li>' for i,k in enumerate(keys))+'</ol></nav><div class="product-grid">'+''.join(card(k,i+1,slug) for i,k in enumerate(keys))+'</div><section class="more-section"><h2>ほかのカテゴリー</h2>'+categories(slug)+'</section>'
  schema={'@context':'https://schema.org','@type':'CollectionPage','name':name,'url':BASE+slug+'.html','mainEntity':{'@type':'ItemList','itemListElement':[{'@type':'ListItem','position':i+1,'name':P[k]['brand']+' '+P[k]['name'],'url':BASE+slug+'.html#product-'+k} for i,k in enumerate(keys)]}}
  (R/(slug+'.html')).write_text(shell(name+'10選',intro,body,slug+'.html',slug,schema))
 # Home
-body='''<section class="home-hero"><img class="home-hero-image" src="haeru-main.webp" alt="色とりどりのスイーツを並べたイメージイラスト" width="1536" height="1024" fetchpriority="high"><div class="home-hero-copy"><p class="eyebrow">A LITTLE SWEET, A LITTLE HAPPY.</p><h1><span>眺めて、ときめく。</span><span>選んで、うれしい。</span></h1><p>今日のおやつも、大切な人への贈り物も。<br>あなたの「すき」に出会う、スイーツ図鑑。</p><a class="primary-link" href="#categories">お菓子を探す <span>↓</span></a></div></section><p class="image-note">メインビジュアルはAI生成のイメージです。実際の掲載商品写真ではありません。</p>'''+adnote()+'''<section class="welcome"><p class="eyebrow">WELCOME TO TOKIMEKI</p><h2>お菓子選びにも、<br class="mobile-only">小さな寄り道を。</h2><p>色とりどりの断面。かわいい動物。<br>箱を開けたときの、うれしい驚き。<br>25種類のお菓子を、7つの切り口から紹介します。</p><a class="text-link" href="about.html">私たちの選び方について ↗</a></section><section id="categories" class="home-section"><div class="section-head"><div><p class="eyebrow">SEVEN SWEET COLLECTIONS</p><h2>いまの気分から、選ぶ。</h2></div><p>同じお菓子も、目的に合うカテゴリーから見つかります。</p></div>'''+categories()+'''</section><section class="home-section search-section"><p class="eyebrow">SWEETS FINDER</p><h2>気になる名前や素材で。</h2><label class="search-label" for="sweet-search">商品名・ブランド名・紹介文から探せます</label><div class="search-input-wrap"><span aria-hidden="true">⌕</span><input id="sweet-search" type="search" placeholder="例：栗、チョコ、パンダ" autocomplete="off"></div><p id="search-status" class="result-status" aria-live="polite"></p><div class="search-results" hidden>'''+''.join(f'<a class="search-result" data-search="{E(p["brand"]+p["name"]+p["tag"]+p["description"])}" href="{next(c[0] for c in CATS if k in c[5])}.html#product-{k}">{img(k)}<span><small>{E(p["brand"])}</small><strong>{E(p["name"])}</strong></span><span aria-hidden="true">↗</span></a>' for k,p in P.items())+'''</div></section><section class="season-feature home-section"><div><p class="eyebrow">2026 AUTUMN & WINTER</p><h2>お菓子も、冬支度。</h2><p>マフラー姿のパンダや、クリスマスの装い。<br>季節のパッケージを選ぶ楽しみも、ひとつまみ。</p><a class="primary-link" href="season.html">秋冬のセレクションへ ↗</a></div><a class="feature-photo" href="season.html">'''+img('panda-winter')+'''</a><a class="feature-photo" href="season.html">'''+img('yoku-christmas')+'''</a></section><section class="home-section"><div class="section-head"><div><p class="eyebrow">EDITOR'S PICKS</p><h2>最初に出会う、3つのお菓子。</h2></div><p>形も、色も、楽しみ方も違う3品から。</p></div><div class="product-grid featured-grid">'''+''.join(card(k,i+1) for i,k in enumerate(['planet','flower-pop','mochi']))+'''</div></section><section class="budget-teaser home-section"><p class="eyebrow">A GIFT WITHIN YOUR BUDGET</p><h2>予算を決めて、探したいときに。</h2><div class="budget-links"><a href="price.html?budget=1000"><small>小さなお礼に</small><strong>1,000円以下</strong><span>探してみる ↗</span></a><a href="price.html?budget=2000"><small>気軽な贈り物に</small><strong>2,000円以下</strong><span>探してみる ↗</span></a><a href="price.html?budget=3000"><small>ちょっとしたご褒美に</small><strong>3,000円以下</strong><span>探してみる ↗</span></a></div><p class="fine">2026年11月16日の確認価格が目安です。送料・選択内容によって総額は変わります。</p></section><section class="reading-note"><h2>お取り寄せを楽しむ、3つの確認。</h2><div><p><strong>01　届く日を確認</strong><br>贈り物は、お届け予定日と受け取れる日を合わせて。</p><p><strong>02　保存と解凍を確認</strong><br>冷凍品は、冷凍庫の空きと解凍時間もチェック。</p><p><strong>03　原材料を確認</strong><br>アレルギーや洋酒の使用は、販売ページの表示を確認してください。</p></div></section>'''
-(R/'index.html').write_text(shell('見てときめく、お取り寄せスイーツ','25種類のお取り寄せスイーツを、映える・かわいい・洋菓子・和菓子・ギフト・季節・価格の7つの切り口から紹介。実際の商品写真と広告リンクで探せます。',body,'index.html'))
-about='''<article class="text-page"><p class="eyebrow">ABOUT THIS GUIDE</p><h1>このサイトについて</h1><p class="text-lead">「すき」から始まる、お菓子選び。</p><p>ときめきスイーツ図鑑は、見た目の魅力や選ぶ楽しさを大切に、お取り寄せのお菓子を紹介するサイトです。自分へのご褒美にも、大切な人への贈り物にも。用途に合う一品を見つけるきっかけを目指しています。</p><h2>商品の選び方</h2><ul><li>形・色・断面・パッケージなどに、それぞれの魅力があること。</li><li>楽天市場・Amazon・Yahoo!ショッピングのいずれかで通常購入の商品として取り扱いがあること。</li><li>もしもアフィリエイトで広告リンクの取得を確認できること。現在掲載している25商品は、楽天市場の広告リンクを取得した商品です。</li><li>ふるさと納税の返礼品や、お菓子ではない雑貨・ミニチュアを混ぜないこと。</li></ul><h2>紹介文と写真について</h2><p>紹介文は、販売ページなどの公開情報をもとに、AIによる制作支援を利用して作成しています。すべての商品を実食した体験談ではありません。食べたと誤解させる表現や、根拠のない評価・ランキングは使いません。</p><p>商品写真は、アフィリエイト広告から提供される画像を表示しています。商品画像の内容や色の加工は行っていません。メインビジュアルに使うAI生成のイメージ画像は、その旨を明示しています。</p><h2>カテゴリーと掲載数</h2><p>25種類の商品を、7カテゴリー各10枠で紹介しています。目的に合うものは複数のカテゴリーに掲載しているため、掲載枠の合計が商品の種類数になるわけではありません。</p><h2>販売情報の更新</h2><p>掲載情報の確認日：2026年11月16日。価格・在庫・送料・内容量・パッケージ・配送条件は変更になる場合があります。とくに期間限定品は、注文前に販売ページで最新情報をご確認ください。</p><h2>購入・配送に関するお問い合わせ</h2><p>当サイトは商品を販売する店舗ではありません。ご注文・配送・返品・商品仕様については、リンク先の販売店へお問い合わせください。</p><a class="primary-link" href="index.html#categories">お菓子を探す ↗</a></article>'''
+def search_result(key, slug):
+    product = P[key]
+    search = E(" ".join(product[field] for field in ("brand", "name", "tag", "description")))
+    return (
+        f'<a class="search-result" data-search="{search}" href="{slug}.html#product-{key}">'
+        f'{img(key)}<span><small>{E(product["brand"])}</small><strong>{E(product["name"])}</strong></span>'
+        '<span aria-hidden="true">↗</span></a>'
+    )
+
+
+body = '''<section class="home-hero simple-hero" aria-labelledby="home-title">
+  <div class="home-hero-copy">
+    <h1 id="home-title">ときめきスイーツ図鑑</h1>
+    <p>自分へのご褒美にも、大切な人への贈り物にも。<br>写真を眺めながら、お取り寄せスイーツを選べます。</p>
+    <a class="primary-link" href="#categories">お菓子を選ぶ <span aria-hidden="true">↓</span></a>
+  </div>
+  <img class="home-hero-image" src="haeru-main.webp" alt="桜の花と、タルトや華やかなお菓子を並べたイメージ" width="1752" height="897" fetchpriority="high">
+</section>
+<p class="image-note">メイン画像はAIで作成したイメージです。</p>
+<section id="categories" class="home-section simple-collections">
+  <div class="section-head"><h2>カテゴリーから選ぶ</h2></div>''' + categories() + '''
+  <p class="image-note">カテゴリーの写真は、掲載商品の広告画像です。</p>
+</section>
+<details class="home-section simple-search">
+  <summary>商品名や素材で探す</summary>
+  <label class="search-label" for="sweet-search">商品名・ブランド名・素材</label>
+  <div class="search-input-wrap"><input id="sweet-search" type="search" placeholder="例：栗、パンダ" autocomplete="off"></div>
+  <p id="search-status" class="result-status" aria-live="polite"></p>
+  <div class="search-results" hidden>''' + ''.join(search_result(key, slug) for key, slug in PRODUCT_COLLECTION.items()) + '''</div>
+</details>''' + adnote()
+(R/'index.html').write_text(shell('見てときめく、お取り寄せスイーツ','映えるスイーツとキュートなお菓子を各10品、計20品紹介。お取り寄せスイーツを写真で見比べて選べます。',body,'index.html'))
+about='''<article class="text-page"><p class="eyebrow">ABOUT THIS GUIDE</p><h1>このサイトについて</h1><p class="text-lead">「すき」から始まる、お菓子選び。</p><p>ときめきスイーツ図鑑は、見た目の魅力や選ぶ楽しさを大切に、お取り寄せのお菓子を紹介するサイトです。自分へのご褒美にも、大切な人への贈り物にも。用途に合う一品を見つけるきっかけを目指しています。</p><h2>商品の選び方</h2><ul><li>形・色・断面・パッケージなどに、それぞれの魅力があること。</li><li>楽天市場・Amazon・Yahoo!ショッピングのいずれかで通常購入の商品として取り扱いがあること。</li><li>もしもアフィリエイトで広告リンクの取得を確認できること。現在掲載している20商品は、楽天市場の広告リンクを取得した商品です。</li><li>ふるさと納税の返礼品や、お菓子ではない雑貨・ミニチュアを混ぜないこと。</li></ul><h2>紹介文と写真について</h2><p>紹介文は、販売ページなどの公開情報をもとに、AIによる制作支援を利用して作成しています。すべての商品を実食した体験談ではありません。食べたと誤解させる表現や、根拠のない評価・ランキングは使いません。</p><p>商品写真は、アフィリエイト広告から提供される画像を表示しています。商品画像の内容や色の加工は行っていません。メインビジュアルに使うAI生成のイメージ画像は、その旨を明示しています。</p><h2>カテゴリーと掲載数</h2><p>映えるスイーツとキュートなお菓子を各10品、計20品紹介しています。掲載する商品はカテゴリーごとに異なります。</p><h2>販売情報の更新</h2><p>掲載情報の確認日：2026年11月16日。価格・在庫・送料・内容量・パッケージ・配送条件は変更になる場合があります。とくに期間限定品は、注文前に販売ページで最新情報をご確認ください。</p><h2>購入・配送に関するお問い合わせ</h2><p>当サイトは商品を販売する店舗ではありません。ご注文・配送・返品・商品仕様については、リンク先の販売店へお問い合わせください。</p><a class="primary-link" href="index.html#categories">お菓子を探す ↗</a></article>'''
 (R/'about.html').write_text(shell('このサイトについて・掲載方針','ときめきスイーツ図鑑の商品選定、写真・紹介文、広告と掲載情報について。',about,'about.html'))
-privacy='''<article class="text-page"><p class="eyebrow">ADS & PRIVACY</p><h1>広告・プライバシーについて</h1><h2>アフィリエイト広告</h2><p>当サイトは、もしもアフィリエイトを利用した楽天市場の広告リンクを掲載しています。リンクを経由した購入により、サイト運営者が報酬を受け取る場合があります。広告は商品画像や購入ボタンの近くで明示しています。</p><h2>外部サイトへの移動</h2><p>「楽天市場で見る」などの広告リンクを押すと、外部の販売ページへ移動します。商品代金・送料・購入条件は、外部サイトの注文画面でご確認ください。</p><h2>外部画像・広告スクリプト</h2><p>商品画像や広告カードの表示には、広告配信元などの外部サービスへの通信が発生します。その際、IPアドレスやブラウザ情報などが外部サービスへ送信される場合があります。広告配信・成果計測にはCookie等が使用される場合があります。</p><h2>サイト内検索</h2><p>当サイトの商品検索と予算の絞り込みは、ブラウザ内で動作します。検索欄に入力した内容を、当サイト独自のサーバーへ送信・保存する機能は設けていません。</p><h2>アクセス解析・入力フォーム</h2><p>この版には、当サイト独自のアクセス解析タグ、会員登録、問い合わせ入力フォームは設置していません。サイトのホスティングや広告配信サービスによる情報の取り扱いについては、各サービスの方針をご確認ください。</p><p>最終更新：2026年11月16日</p><a class="text-link" href="about.html">掲載方針を見る ↗</a></article>'''
+privacy='''<article class="text-page"><p class="eyebrow">ADS & PRIVACY</p><h1>広告・プライバシーについて</h1><h2>アフィリエイト広告</h2><p>当サイトは、もしもアフィリエイトを利用した楽天市場の広告リンクを掲載しています。リンクを経由した購入により、サイト運営者が報酬を受け取る場合があります。広告は商品画像や購入ボタンの近くで明示しています。</p><h2>外部サイトへの移動</h2><p>「楽天市場で見る」などの広告リンクを押すと、外部の販売ページへ移動します。商品代金・送料・購入条件は、外部サイトの注文画面でご確認ください。</p><h2>外部画像・広告スクリプト</h2><p>商品画像や広告カードの表示には、広告配信元などの外部サービスへの通信が発生します。その際、IPアドレスやブラウザ情報などが外部サービスへ送信される場合があります。広告配信・成果計測にはCookie等が使用される場合があります。</p><h2>サイト内検索</h2><p>当サイトの商品検索は、ブラウザ内で動作します。検索欄に入力した内容を、当サイト独自のサーバーへ送信・保存する機能は設けていません。</p><h2>アクセス解析・入力フォーム</h2><p>この版には、当サイト独自のアクセス解析タグ、会員登録、問い合わせ入力フォームは設置していません。サイトのホスティングや広告配信サービスによる情報の取り扱いについては、各サービスの方針をご確認ください。</p><p>最終更新：2026年11月16日</p><a class="text-link" href="about.html">掲載方針を見る ↗</a></article>'''
 (R/'privacy.html').write_text(shell('広告・プライバシーについて','アフィリエイト広告、外部サイト、商品画像の表示、サイト内検索での情報の取り扱い。',privacy,'privacy.html'))
 urls=['index.html']+[c[0]+'.html' for c in CATS]+['about.html','privacy.html']
 (R/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join(f'<url><loc>{BASE+f}</loc><lastmod>2026-11-16</lastmod></url>' for f in urls)+'</urlset>')
 (R/'robots.txt').write_text('User-agent: *\nAllow: /\nSitemap: '+BASE+'sitemap.xml\n')
-print('Built home, seven category pages, two policy pages and sitemap')
+# Keep bookmarks to retired collections usable without advertising the old pages.
+for slug, *_ in COLLECTIONS:
+    if slug not in PUBLISHED:
+        (R / f"{slug}.html").write_text(
+            '<!doctype html><html lang="ja"><head><meta charset="utf-8">'
+            '<meta name="viewport" content="width=device-width,initial-scale=1">'
+            '<title>カテゴリー一覧｜ときめきスイーツ図鑑</title>'
+            '<meta name="robots" content="noindex,follow">'
+            f'<link rel="canonical" href="{BASE}">'
+            '<meta http-equiv="refresh" content="0; url=index.html#categories">'
+            '</head><body><p><a href="index.html#categories">カテゴリー一覧に戻る</a></p></body></html>'
+        )
+
+print(f"Built home, {len(CATS)} category pages, two policy pages and sitemap")
