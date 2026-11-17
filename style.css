@@ -28,7 +28,7 @@
 .tea-message { margin: clamp(24px, 4vw, 48px) 0 0; }
 .tea-message img { display: block; width: 100%; height: auto; border-radius: 12px; }
 .simple-collections { margin-top: clamp(30px, 5vw, 54px); }
-.simple-collections .category-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.simple-collections .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .more-section .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .simple-collections .category-card, .more-section .category-card { border-radius: 16px; }
 .collection-hero.collection-hero-text { grid-template-columns: minmax(0, 1fr); }
@@ -52,3 +52,5 @@
 
 .additional-purchase { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 9px; }
 .additional-purchase > a { display: inline-flex; align-items: center; min-height: 44px; font-size: 12px; line-height: 1.55; overflow-wrap: anywhere; text-underline-offset: 3px; }
+
+.additional-purchase:only-child { margin-top: 0; border-top: 0; padding-top: 0; }
