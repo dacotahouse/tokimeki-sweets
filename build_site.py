@@ -32,16 +32,16 @@ def card(k,n=0,context='',compact=False):
  p=P[k];data=f' data-price="{p["price"] or 0}"';badge=('期間・季節の販売商品' if p['seasonal'] else '秋冬に選びたい定番') if context=='season' else p['tag']
  price=f'<p class="price-guide">確認時の商品価格 <strong>{p["price"]:,}円</strong><small>税込・送料別途の場合あり／2026年11月16日確認</small></p>' if context=='price' else ''
  return f'<article class="product" id="product-{k}"{data}><div class="product-heading"><div class="product-kicker"><span>{n:02d}</span><span>{E(badge)}</span></div><p class="product-brand">{E(p["brand"])}</p><h2>{E(p["name"])}</h2><p class="product-catch">{E(p["catch"])}</p></div><div class="purchase" aria-label="{E(p["name"])}の楽天市場広告"><p class="ad-label">広告・楽天市場</p>{p["code"]}</div><div class="product-editorial">{price}<p>{E(p["description"])}</p><p class="product-note">{E(p["note"])}</p></div><a class="back-index" href="{chr(35)+("page-index" if context else "categories")}">一覧に戻る ↑</a></article>'
-# Optional artwork for category cards on the home page.
-HOME_CATEGORY_BANNERS = {
+# Optional artwork for category cards.
+CATEGORY_BANNERS = {
     "haeru": ("category-haeru.webp", 1448, 1086),
     "cute": ("category-cute.webp", 1448, 1086),
 }
 
 
-def category_card(collection, show_home_art):
+def category_card(collection):
     slug, name, headline, _, cover, _ = collection
-    banner = HOME_CATEGORY_BANNERS.get(slug) if show_home_art else None
+    banner = CATEGORY_BANNERS.get(slug)
     if banner:
         path, width, height = banner
         photo = (
@@ -58,11 +58,11 @@ def category_card(collection, show_home_art):
 
 
 def categories(active=None):
-    cards = [category_card(c, show_home_art=active is None) for c in CATS if c[0] != active]
+    cards = [category_card(c) for c in CATS if c[0] != active]
     return '<div class="category-grid">' + ''.join(cards) + '</div>'
 
-for slug,name,headline,intro,cover,keys in CATS:
- body=f'<div class="breadcrumb"><a href="index.html">ホーム</a><span>／</span>{name}</div><section class="collection-hero"><div><p class="eyebrow">SWEETS COLLECTION</p><h1>{name}</h1><p class="collection-heading">{headline}</p><p>{intro}</p><a class="text-link" href="#page-index">10の商品を見る ↓</a></div><div class="collection-photo">{img(cover,lazy=False)}<span class="photo-caption">掲載商品の広告画像</span></div></section>'+adnote()
+for slug,name,headline,intro,_,keys in CATS:
+ body=f'<div class="breadcrumb"><a href="index.html">ホーム</a><span>／</span>{name}</div><section class="collection-hero collection-hero-text"><div><p class="eyebrow">SWEETS COLLECTION</p><h1>{name}</h1><p class="collection-heading">{headline}</p><p>{intro}</p><a class="text-link" href="#page-index">10の商品を見る ↓</a></div></section>'+adnote()
  if slug=='season':body+='<aside class="editorial-note"><strong>2026年 秋冬のセレクション</strong><p>前半6品は、販売ページに季節限定・期間限定・クリスマス仕様・干支パッケージの案内がある商品です。後半4品は、秋冬のお茶時間に選びたい定番品。限定品は販売終了・売り切れになる場合があります。</p></aside>'
  if slug=='price':body+='<aside class="editorial-note"><strong>価格は、比較のための目安です。</strong><p>2026年11月16日に、もしもアフィリエイトの商品検索で表示された税込商品価格です。送料を含む総額や、選択するセットによって金額が変わる場合があります。購入前に販売ページでご確認ください。</p></aside><div class="budget-filters" aria-label="予算で絞り込む"><button type="button" data-budget="all" aria-pressed="true">すべて</button><button type="button" data-budget="1000">1,000円以下</button><button type="button" data-budget="2000">2,000円以下</button><button type="button" data-budget="3000">3,000円以下</button><button type="button" data-budget="over">3,001円以上</button></div><p id="budget-status" class="result-status" aria-live="polite"></p>'
  body+='<nav id="page-index" class="page-index" aria-label="このページの商品"><h2>気になるお菓子から</h2><ol>'+''.join(f'<li><a href="#product-{k}"><span>{i+1:02d}</span>{E(P[k]["name"])}</a></li>' for i,k in enumerate(keys))+'</ol></nav><div class="product-grid">'+''.join(card(k,i+1,slug) for i,k in enumerate(keys))+'</div><section class="more-section"><h2>ほかのカテゴリー</h2>'+categories(slug)+'</section>'
