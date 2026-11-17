@@ -7,11 +7,11 @@ COLLECTIONS=[
 ('cute','キュートなお菓子','かわいい、を贈る。','動物の表情や小さな形に、ふっと笑顔になるお菓子を選びました。','animal-marshmallow',['animal-marshmallow','animal-manju','caffarel','flower-pop','parfait-bar','monaka','panda-winter','yoku-christmas','royce-winter','toraya-eto']),
 ('chocolate','チョコレート・洋菓子','お茶の時間が、待ち遠しい。','ひと粒のチョコから、切り分けるデザートまで。洋菓子の楽しみを少しずつ。','caffarel',['planet','lindt','royce-winter','henri-collection','yoku-christmas','cassata','waffle','flower-pop','petit-tart','fruit-tart']),
 ('wagashi','和菓子・和スイーツ','日本茶と、甘いひと息。','栗、抹茶、あんこ。おなじみの素材を、形や組み合わせの違いから選びます。','morin',['kuririn','mochi','morin','fukiyose','mikan','parfait-bar','toraya-eto','kurikinton','kuri-matcha-daifuku','monaka']),
-('gift','ギフトスイーツ','ありがとうに、甘い彩りを。','相手の好みや、一緒に食べる人数を思い浮かべて。贈る時間まで楽しい一品を。','fukiyose',['henri-collection','toraya-eto','fukiyose','planet','fruit-tart','waffle','lindt','yoku-christmas','mochi','caffarel']),
+('gift','ギフトスイーツ','手土産やお祝いに、贈りたい10品。','ちょっとしたお礼には手渡ししやすい箱菓子を。お祝いには、開ける楽しみのある一箱を。贈る相手と場面に合わせて選べるお菓子を集めました。','frantz-tsubo',['frantz-tsubo','west-dry-cakes','kurumicco','shiseido-gana','miel-caramel','kihachi-assort-m','press-amaou','tsujiri-sato','butter-galette','fugetsudo-gaufres']),
 ('season','季節を楽しむスイーツ','秋から冬へ、お菓子も衣替え。','いまの限定パッケージと、秋冬のお茶時間に選びたい定番のお菓子を集めました。','panda-winter',['royce-winter','yoku-christmas','panda-winter','henri-collection','toraya-eto','kuri-matcha-daifuku','kuririn','kurikinton','caffarel','lindt']),
 ('price','価格別スイーツ','予算に合う、ときめきを。','小さなお礼から、きちんとした贈り物まで。確認時の商品価格を目安に探せます。','monaka',['monaka','royce-winter','animal-marshmallow','panda-winter','kurikinton','kuri-matcha-daifuku','yoku-christmas','caffarel','henri-collection','toraya-eto'])]
 # Add an existing collection slug here when its page is ready to be featured.
-PUBLISHED = ("haeru", "cute")
+PUBLISHED = ("haeru", "cute", "gift")
 CATS = [c for c in COLLECTIONS if c[0] in PUBLISHED]
 PRODUCT_COLLECTION = {key: c[0] for c in CATS for key in c[5]}
 assert len(CATS) == len(PUBLISHED) and all(len(c[5]) == 10 for c in CATS)
@@ -27,15 +27,25 @@ def foot():
 def shell(title,desc,body,file,active='',schema=None):
  structured='' if schema is None else '<script type="application/ld+json">'+json.dumps(schema,ensure_ascii=False).replace('<','\\u003c')+'</script>'
  return '<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>'+E(title)+'｜ときめきスイーツ図鑑</title><meta name="description" content="'+E(desc)+'"><link rel="canonical" href="'+BASE+file+'"><meta property="og:type" content="website"><meta property="og:title" content="'+E(title)+'｜ときめきスイーツ図鑑"><meta property="og:description" content="'+E(desc)+'"><meta property="og:url" content="'+BASE+file+'"><meta property="og:image" content="'+BASE+'haeru-main.webp"><link rel="stylesheet" href="style.css"><script src="site.js" defer></script>'+structured+'</head><body>'+nav(active)+'<main id="main">'+body+'</main>'+foot()+'</body></html>'
-def adnote():return '<p class="ad-note"><strong>広告を含みます</strong> 商品画像・購入ボタンには楽天市場のアフィリエイト広告を使用しています。</p>'
+def adnote():
+    return '<p class="ad-note"><strong>広告を含みます</strong> 商品画像・購入リンクには、アフィリエイト広告を使用しています。</p>'
+
+def purchase(product):
+    name = E(product["name"])
+    ads = '<p class="ad-label">広告・楽天市場</p>' + product["code"]
+    if yahoo_code := product.get("yahoo_code"):
+        ads += '<div class="additional-purchase"><p class="ad-label">広告・Yahoo!ショッピング</p>' + yahoo_code + '</div>'
+    return f'<div class="purchase" aria-label="{name}の購入先（広告）">{ads}</div>'
+
 def card(k,n=0,context='',compact=False):
  p=P[k];data=f' data-price="{p["price"] or 0}"';badge=('期間・季節の販売商品' if p['seasonal'] else '秋冬に選びたい定番') if context=='season' else p['tag']
  price=f'<p class="price-guide">確認時の商品価格 <strong>{p["price"]:,}円</strong><small>税込・送料別途の場合あり／2026年11月16日確認</small></p>' if context=='price' else ''
- return f'<article class="product" id="product-{k}"{data}><div class="product-heading"><div class="product-kicker"><span>{n:02d}</span><span>{E(badge)}</span></div><p class="product-brand">{E(p["brand"])}</p><h2>{E(p["name"])}</h2><p class="product-catch">{E(p["catch"])}</p></div><div class="purchase" aria-label="{E(p["name"])}の楽天市場広告"><p class="ad-label">広告・楽天市場</p>{p["code"]}</div><div class="product-editorial">{price}<p>{E(p["description"])}</p><p class="product-note">{E(p["note"])}</p></div><a class="back-index" href="{chr(35)+("page-index" if context else "categories")}">一覧に戻る ↑</a></article>'
+ return f'<article class="product" id="product-{k}"{data}><div class="product-heading"><div class="product-kicker"><span>{n:02d}</span><span>{E(badge)}</span></div><p class="product-brand">{E(p["brand"])}</p><h2>{E(p["name"])}</h2><p class="product-catch">{E(p["catch"])}</p></div>{purchase(p)}<div class="product-editorial">{price}<p>{E(p["description"])}</p><p class="product-note">{E(p["note"])}</p></div><a class="back-index" href="{chr(35)+("page-index" if context else "categories")}">一覧に戻る ↑</a></article>'
 # Optional artwork for category cards.
 CATEGORY_BANNERS = {
     "haeru": ("category-haeru.webp", 1448, 1086),
     "cute": ("category-cute.webp", 1448, 1086),
+    "gift": ("category-gift.webp", 1448, 1086),
 }
 
 
@@ -103,13 +113,13 @@ body = '''<section class="home-hero simple-hero" aria-labelledby="home-title">
   <p id="search-status" class="result-status" aria-live="polite"></p>
   <div class="search-results" hidden>''' + ''.join(search_result(key, slug) for key, slug in PRODUCT_COLLECTION.items()) + '''</div>
 </details>''' + adnote()
-(R/'index.html').write_text(shell('見てときめく、お取り寄せスイーツ','映えるスイーツとキュートなお菓子を各10品、計20品紹介。お取り寄せスイーツを写真で見比べて選べます。',body,'index.html'))
-about='''<article class="text-page"><p class="eyebrow">ABOUT THIS GUIDE</p><h1>このサイトについて</h1><p class="text-lead">「すき」から始まる、お菓子選び。</p><p>ときめきスイーツ図鑑は、見た目の魅力や選ぶ楽しさを大切に、お取り寄せのお菓子を紹介するサイトです。自分へのご褒美にも、大切な人への贈り物にも。用途に合う一品を見つけるきっかけを目指しています。</p><h2>商品の選び方</h2><ul><li>形・色・断面・パッケージなどに、それぞれの魅力があること。</li><li>楽天市場・Amazon・Yahoo!ショッピングのいずれかで通常購入の商品として取り扱いがあること。</li><li>もしもアフィリエイトで広告リンクの取得を確認できること。現在掲載している20商品は、楽天市場の広告リンクを取得した商品です。</li><li>ふるさと納税の返礼品や、お菓子ではない雑貨・ミニチュアを混ぜないこと。</li></ul><h2>紹介文と写真について</h2><p>紹介文は、販売ページなどの公開情報をもとに、AIによる制作支援を利用して作成しています。すべての商品を実食した体験談ではありません。食べたと誤解させる表現や、根拠のない評価・ランキングは使いません。</p><p>商品写真は、アフィリエイト広告から提供される画像を表示しています。商品画像の内容や色の加工は行っていません。メインビジュアルに使うAI生成のイメージ画像は、その旨を明示しています。</p><h2>カテゴリーと掲載数</h2><p>映えるスイーツとキュートなお菓子を各10品、計20品紹介しています。掲載する商品はカテゴリーごとに異なります。</p><h2>販売情報の更新</h2><p>掲載情報の確認日：2026年11月16日。価格・在庫・送料・内容量・パッケージ・配送条件は変更になる場合があります。とくに期間限定品は、注文前に販売ページで最新情報をご確認ください。</p><h2>購入・配送に関するお問い合わせ</h2><p>当サイトは商品を販売する店舗ではありません。ご注文・配送・返品・商品仕様については、リンク先の販売店へお問い合わせください。</p><a class="primary-link" href="index.html#categories">お菓子を探す ↗</a></article>'''
+(R/'index.html').write_text(shell('見てときめく、お取り寄せスイーツ','映えるスイーツ、キュートなお菓子、ギフトスイーツを各10品、計30品紹介。お取り寄せスイーツを写真で見比べて選べます。',body,'index.html'))
+about='''<article class="text-page"><p class="eyebrow">ABOUT THIS GUIDE</p><h1>このサイトについて</h1><p class="text-lead">「すき」から始まる、お菓子選び。</p><p>ときめきスイーツ図鑑は、見た目の魅力や選ぶ楽しさを大切に、お取り寄せのお菓子を紹介するサイトです。自分へのご褒美にも、大切な人への贈り物にも。用途に合う一品を見つけるきっかけを目指しています。</p><h2>商品の選び方</h2><ul><li>形・色・断面・パッケージなどに、それぞれの魅力があること。</li><li>楽天市場・Amazon・Yahoo!ショッピングのいずれかで通常購入の商品として取り扱いがあること。</li><li>もしもアフィリエイトで広告リンクの取得を確認できること。現在掲載している30品には楽天市場の広告リンクがあり、一部はYahoo!ショッピングの広告リンクも掲載しています。</li><li>ふるさと納税の返礼品や、お菓子ではない雑貨・ミニチュアを混ぜないこと。</li></ul><h2>紹介文と写真について</h2><p>紹介文は、販売ページなどの公開情報をもとに、AIによる制作支援を利用して作成しています。すべての商品を実食した体験談ではありません。食べたと誤解させる表現や、根拠のない評価・ランキングは使いません。</p><p>商品写真は、アフィリエイト広告から提供される画像を表示しています。商品画像の内容や色の加工は行っていません。トップページのメイン画像とカテゴリー画像には、イメージ画像を使っています。</p><h2>カテゴリーと掲載数</h2><p>映えるスイーツ、キュートなお菓子、ギフトスイーツを各10品、計30品紹介しています。掲載する商品はカテゴリーごとに異なります。</p><h2>販売情報の更新</h2><p>掲載情報の確認日：映えるスイーツ・キュートなお菓子は2026年11月16日、ギフトスイーツは2026年11月17日。価格・在庫・送料・内容量・パッケージ・配送条件は変更になる場合があります。とくに期間限定品は、注文前に販売ページで最新情報をご確認ください。</p><h2>購入・配送に関するお問い合わせ</h2><p>当サイトは商品を販売する店舗ではありません。ご注文・配送・返品・商品仕様については、リンク先の販売店へお問い合わせください。</p><a class="primary-link" href="index.html#categories">お菓子を探す ↗</a></article>'''
 (R/'about.html').write_text(shell('このサイトについて・掲載方針','ときめきスイーツ図鑑の商品選定、写真・紹介文、広告と掲載情報について。',about,'about.html'))
-privacy='''<article class="text-page"><p class="eyebrow">ADS & PRIVACY</p><h1>広告・プライバシーについて</h1><h2>アフィリエイト広告</h2><p>当サイトは、もしもアフィリエイトを利用した楽天市場の広告リンクを掲載しています。リンクを経由した購入により、サイト運営者が報酬を受け取る場合があります。広告は商品画像や購入ボタンの近くで明示しています。</p><h2>外部サイトへの移動</h2><p>「楽天市場で見る」などの広告リンクを押すと、外部の販売ページへ移動します。商品代金・送料・購入条件は、外部サイトの注文画面でご確認ください。</p><h2>外部画像・広告スクリプト</h2><p>商品画像や広告カードの表示には、広告配信元などの外部サービスへの通信が発生します。その際、IPアドレスやブラウザ情報などが外部サービスへ送信される場合があります。広告配信・成果計測にはCookie等が使用される場合があります。</p><h2>サイト内検索</h2><p>当サイトの商品検索は、ブラウザ内で動作します。検索欄に入力した内容を、当サイト独自のサーバーへ送信・保存する機能は設けていません。</p><h2>アクセス解析・入力フォーム</h2><p>この版には、当サイト独自のアクセス解析タグ、会員登録、問い合わせ入力フォームは設置していません。サイトのホスティングや広告配信サービスによる情報の取り扱いについては、各サービスの方針をご確認ください。</p><p>最終更新：2026年11月16日</p><a class="text-link" href="about.html">掲載方針を見る ↗</a></article>'''
+privacy='''<article class="text-page"><p class="eyebrow">ADS & PRIVACY</p><h1>広告・プライバシーについて</h1><h2>アフィリエイト広告</h2><p>当サイトは、もしもアフィリエイトを利用した楽天市場とYahoo!ショッピングの広告リンクを掲載しています。リンクを経由した購入により、サイト運営者が報酬を受け取る場合があります。広告は商品画像や購入ボタンの近くで明示しています。</p><h2>外部サイトへの移動</h2><p>各販売先への広告リンクを押すと、外部の販売ページへ移動します。商品代金・送料・購入条件は、外部サイトの注文画面でご確認ください。</p><h2>外部画像・広告スクリプト</h2><p>商品画像や広告カードの表示には、広告配信元などの外部サービスへの通信が発生します。その際、IPアドレスやブラウザ情報などが外部サービスへ送信される場合があります。広告配信・成果計測にはCookie等が使用される場合があります。</p><h2>サイト内検索</h2><p>当サイトの商品検索は、ブラウザ内で動作します。検索欄に入力した内容を、当サイト独自のサーバーへ送信・保存する機能は設けていません。</p><h2>アクセス解析・入力フォーム</h2><p>この版には、当サイト独自のアクセス解析タグ、会員登録、問い合わせ入力フォームは設置していません。サイトのホスティングや広告配信サービスによる情報の取り扱いについては、各サービスの方針をご確認ください。</p><p>最終更新：2026年11月17日</p><a class="text-link" href="about.html">掲載方針を見る ↗</a></article>'''
 (R/'privacy.html').write_text(shell('広告・プライバシーについて','アフィリエイト広告、外部サイト、商品画像の表示、サイト内検索での情報の取り扱い。',privacy,'privacy.html'))
 urls=['index.html']+[c[0]+'.html' for c in CATS]+['about.html','privacy.html']
-(R/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join(f'<url><loc>{BASE+f}</loc><lastmod>2026-11-16</lastmod></url>' for f in urls)+'</urlset>')
+(R/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join(f'<url><loc>{BASE+f}</loc><lastmod>2026-11-17</lastmod></url>' for f in urls)+'</urlset>')
 (R/'robots.txt').write_text('User-agent: *\nAllow: /\nSitemap: '+BASE+'sitemap.xml\n')
 # Keep bookmarks to retired collections usable without advertising the old pages.
 for slug, *_ in COLLECTIONS:
