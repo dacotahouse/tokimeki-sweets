@@ -94,14 +94,26 @@ def search_result(key, slug):
 
 
 body = '''<section class="home-hero simple-hero" aria-labelledby="home-title">
+  <img class="home-hero-image" src="haeru-main.webp" alt="桜の花と、タルトや華やかなお菓子を並べたイメージ" width="1752" height="897" fetchpriority="high">
   <div class="home-hero-copy">
     <h1 id="home-title">ときめきスイーツ図鑑</h1>
     <p>自分へのご褒美にも、大切な人への贈り物にも。<br>写真を眺めながら、お取り寄せスイーツを選べます。</p>
     <a class="primary-link" href="#categories">お菓子を選ぶ <span aria-hidden="true">↓</span></a>
   </div>
-  <img class="home-hero-image" src="haeru-main.webp" alt="桜の花と、タルトや華やかなお菓子を並べたイメージ" width="1752" height="897" fetchpriority="high">
 </section>
 <p class="image-note">メイン画像はイメージです。</p>
+<section class="tea-feature" aria-labelledby="tea-feature-title">
+  <figure class="tea-feature-visual">
+    <img src="feature-anko.webp" alt="どら焼きと花の形の練り切りを、温かいお茶と並べたイメージ" width="1280" height="853" loading="lazy">
+    <figcaption>写真はイメージです。</figcaption>
+  </figure>
+  <div class="tea-feature-copy">
+    <p class="tea-feature-label">今日のおやつ、どんな気分？</p>
+    <h2 id="tea-feature-title">温かいお茶と、<br>あんこのおやつ</h2>
+    <p>肌寒い日は、ほうじ茶を淹れて、あんこのおやつをひとつ。香ばしいお茶には、ふんわりしたどら焼きを。緑茶を淹れるなら、花の形をした練り切りを小皿にのせて。お茶からおやつを選んでみるのも、楽しいものです。</p>
+    <a href="wagashi.html">和菓子・和スイーツを眺める <span aria-hidden="true">→</span></a>
+  </div>
+</section>
 <section id="categories" class="home-section simple-collections">
   <div class="section-head"><h2>カテゴリーから選ぶ</h2></div>''' + categories() + '''
   <p class="image-note">カテゴリー画像はイメージです。</p>
