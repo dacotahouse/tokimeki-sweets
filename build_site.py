@@ -34,8 +34,8 @@ def card(k,n=0,context='',compact=False):
  return f'<article class="product" id="product-{k}"{data}><div class="product-heading"><div class="product-kicker"><span>{n:02d}</span><span>{E(badge)}</span></div><p class="product-brand">{E(p["brand"])}</p><h2>{E(p["name"])}</h2><p class="product-catch">{E(p["catch"])}</p></div><div class="purchase" aria-label="{E(p["name"])}の楽天市場広告"><p class="ad-label">広告・楽天市場</p>{p["code"]}</div><div class="product-editorial">{price}<p>{E(p["description"])}</p><p class="product-note">{E(p["note"])}</p></div><a class="back-index" href="{chr(35)+("page-index" if context else "categories")}">一覧に戻る ↑</a></article>'
 # Optional artwork for category cards on the home page.
 HOME_CATEGORY_BANNERS = {
-    "haeru": ("category-haeru.jpg", 1086, 199),
-    "cute": ("category-cute.jpg", 1086, 200),
+    "haeru": ("category-haeru.webp", 1448, 1086),
+    "cute": ("category-cute.webp", 1448, 1086),
 }
 
 
@@ -87,10 +87,15 @@ body = '''<section class="home-hero simple-hero" aria-labelledby="home-title">
   </div>
   <img class="home-hero-image" src="haeru-main.webp" alt="桜の花と、タルトや華やかなお菓子を並べたイメージ" width="1752" height="897" fetchpriority="high">
 </section>
-<p class="image-note">メイン画像はAIで作成したイメージです。</p>
+<p class="image-note">メイン画像はイメージです。</p>
+<figure class="tea-message">
+  <img src="tea-message.jpg" width="1204" height="370" loading="lazy"
+       alt="スイーツには、毎日をちょっと幸せにしてくれる魔法があります。この図鑑が、あなたのお気に入りのスイーツを見つけるきっかけになれば嬉しいです。今日も、素敵なスイーツとの出会いがありますように。">
+  <figcaption><a href="tea-message.jpg" target="_blank" rel="noopener">メッセージ画像を拡大</a></figcaption>
+</figure>
 <section id="categories" class="home-section simple-collections">
   <div class="section-head"><h2>カテゴリーから選ぶ</h2></div>''' + categories() + '''
-  <p class="image-note">カテゴリーのバナーは、AIで作成したイメージです。</p>
+  <p class="image-note">カテゴリー画像はイメージです。</p>
 </section>
 <details class="home-section simple-search">
   <summary>商品名や素材で探す</summary>
