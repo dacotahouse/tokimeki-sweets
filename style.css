@@ -96,3 +96,5 @@
 .chocolate-hero { margin: 0 0 20px; }
 .chocolate-hero img { display: block; width: 100%; height: auto; border-radius: 16px; }
 #main:has(.chocolate-hero) .purchase a { display: inline-flex; align-items: center; min-height: 44px; overflow-wrap: anywhere; }
+
+.season-retailer { display: inline-flex; min-height: 44px; align-items: center; }
