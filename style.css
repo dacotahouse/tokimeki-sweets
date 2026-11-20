@@ -193,3 +193,5 @@
   .gift-budget ul { grid-template-columns: minmax(0, 1fr); }
   .scene-links a { min-height: 54px; }
 }
+
+.category-crisp .category-copy { background: #f7efe4; }
