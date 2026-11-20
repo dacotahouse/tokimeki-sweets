@@ -108,7 +108,7 @@
 }
 .scene-links {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
 }
 .scene-links a {
@@ -186,6 +186,6 @@
 .buying-source { display: inline-block; margin-top: 5px; font-size: 12px; }
 
 @media (max-width: 680px) {
-  .scene-links, .gift-budget ul { grid-template-columns: minmax(0, 1fr); }
+  .gift-budget ul { grid-template-columns: minmax(0, 1fr); }
   .scene-links a { min-height: 54px; }
 }
