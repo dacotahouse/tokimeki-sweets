@@ -1,0 +1,48 @@
+name: Weekly sweets link audit
+
+on:
+  schedule:
+    # Monday 08:30 JST (Sunday 23:30 UTC)
+    - cron: "30 23 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout the published site
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check internal links and product-page responses
+        id: audit
+        continue-on-error: true
+        run: python scripts/check_links.py
+      - name: Show report in GitHub Actions
+        if: always()
+        shell: bash
+        run: |
+          if [ -f link-check-report.md ]; then
+            cat link-check-report.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "The report was not generated." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Save report for 30 days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sweets-link-audit
+          path: |
+            link-check-report.md
+            link-check-report.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Signal broken internal links
+        if: steps.audit.outcome == 'failure'
+        run: exit 1
