@@ -23,7 +23,8 @@ class Page(HTMLParser):
     def handle_starttag(self, tag, attrs):
         attr = dict(attrs)
         element_id = attr.get("id", "")
-        if element_id.startswith("product-"):
+        if (tag == "article" and "product" in attr.get("class", "").split()
+                and element_id.startswith("product-")):
             self.product_ids.append(element_id)
         if element_id.startswith("msmaflink-"):
             self.affiliate_ids.append(element_id)
