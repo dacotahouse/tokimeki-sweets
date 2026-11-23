@@ -107,9 +107,9 @@ def main():
         "**ご注意:** HTTP応答だけで在庫・取り扱い終了を判定しません。"
         "商品の変更や削除は、同一規格と販売状況を人が確かめてから行います。", "",
         "## 内部リンク",
-        *(f"- {e}" for e in errors) if errors else ["問題は見つかりませんでした。"],
+        *( [f"- {e}" for e in errors] if errors else ["問題は見つかりませんでした。"] ),
         "", "## 楽天の要確認URL",
-        *(f"- {r['status']} {r['url']} — {r['note']}" for r in noteworthy) if noteworthy else ["該当なし"],
+        *( [f"- {r['status']} {r['url']} — {r['note']}" for r in noteworthy] if noteworthy else ["該当なし"] ),
     ]
     Path("link-check-report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     Path("link-check-report.json").write_text(json.dumps({
