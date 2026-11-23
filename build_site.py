@@ -12,6 +12,18 @@ COLLECTIONS=[
 ('price','価格別スイーツ','予算に合う、ときめきを。','小さなお礼から、きちんとした贈り物まで。確認時の商品価格を目安に探せます。','monaka',['monaka','royce-winter','animal-marshmallow','panda-winter','kurikinton','kuri-matcha-daifuku','yoku-christmas','caffarel','henri-collection','toraya-eto'])]
 # Add an existing collection slug here when its page is ready to be featured.
 PUBLISHED = ("haeru", "cute", "gift", "wagashi", "chocolate", "season")
+# SAFETY GUARD (2026-11): The current public site has 9 categories,
+# while this legacy builder only knows about 6. Running it would
+# overwrite current design/content and possibly retired pages.
+# Do not remove this guard until the full 9-category source is reconciled.
+if (R / "index.html").exists() and all(
+    (R / f"{slug}.html").exists() for slug in ("solo", "tin", "crisp")
+):
+    raise SystemExit(
+        "安全停止: build_site.py は旧6カテゴリー版です。"
+        " 現在の9カテゴリーサイトに上書きしないため生成を中止しました。"
+        " まず catalog.json と生成テンプレートを現行サイトに同期してください。"
+    )
 CATS = [c for c in COLLECTIONS if c[0] in PUBLISHED]
 PRODUCT_COLLECTION = {key: c[0] for c in CATS for key in c[5]}
 assert len(CATS) == len(PUBLISHED) and all(len(c[5]) == 10 for c in CATS)
