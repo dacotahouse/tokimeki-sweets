@@ -1,0 +1,16 @@
+name: Hatena blog connection check
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Hatena AtomPub connection (read-only)
+        env:
+          HATENA_ID: ${{ secrets.HATENA_ID }}
+          HATENA_API_KEY: ${{ secrets.HATENA_API_KEY }}
+          HATENA_BLOG_ID: dacotahouse.hatenablog.com
+        run: python scripts/check_hatena_connection.py
