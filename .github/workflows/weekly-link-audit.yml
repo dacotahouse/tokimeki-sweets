@@ -8,6 +8,8 @@ on:
   push:
     paths:
       - "scripts/check_links.py"
+      - "scripts/validate_site.py"
+      - "*.html"
       - ".github/workflows/weekly-link-audit.yml"
 
 permissions:
@@ -24,8 +26,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Validate audit script syntax
-        run: python -m py_compile scripts/check_links.py
+      - name: Validate monitoring scripts syntax
+        run: python -m py_compile scripts/check_links.py scripts/validate_site.py
+      - name: Validate the nine published categories
+        run: python scripts/validate_site.py
       - name: Check internal links and product-page responses
         id: audit
         continue-on-error: true
