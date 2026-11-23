@@ -1,0 +1,27 @@
+.office-intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.7fr);align-items:center;gap:clamp(1rem,4vw,3rem);background:#fff5f6;border:1px solid #efdade;border-radius:1.4rem;padding:clamp(1rem,4vw,2.8rem);margin:0 0 1.4rem}
+.office-intro h1{font-size:clamp(1.65rem,4vw,2.8rem);line-height:1.35;margin:.2em 0 .45em}
+.office-intro figure{margin:0}
+.office-intro img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:.9rem}
+.office-intro figcaption,.office-sources,.office-table small{font-size:.85rem;color:#6d4e51}
+.office-intro figcaption{text-align:right;margin-top:.25rem}
+.office-section{margin:2.1rem 0}
+.office-section h2{font-size:clamp(1.45rem,3vw,2rem);margin:0 0 .55rem}
+.office-table{width:100%;border-collapse:collapse;font-size:.95rem;text-align:left;margin:.9rem 0}
+.office-table th,.office-table td{border-bottom:1px solid #ead4dc;padding:.75rem .6rem;overflow-wrap:anywhere}
+.office-table thead{background:#f9e9ee}
+.office-table tbody th,.office-table td:nth-child(3){min-width:4rem}
+.office-table small{display:block}
+.office-tip{border-left:4px solid #ba677e;background:#fff5f6;padding:.85rem 1rem}
+.office-products{display:grid;gap:1rem}
+.office-products article{min-width:0;border:1px solid #ead4dc;padding:clamp(.9rem,3vw,1.6rem);border-radius:1rem;background:#fff}
+.office-products h3{margin:0;font-size:1.15rem}
+.office-sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media(max-width:650px){
+  .office-intro{grid-template-columns:minmax(0,1fr)}
+  .office-intro figure{max-width:24rem}
+  .office-table,.office-table tbody{display:block}
+  .office-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  .office-table tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);border:1px solid #ead4dc;border-radius:.65rem;margin-bottom:.6rem;padding:.2rem .45rem}
+  .office-table th,.office-table td{border:0;padding:.42rem .28rem;min-width:0}
+  .office-table td:last-child{align-self:center}
+}
