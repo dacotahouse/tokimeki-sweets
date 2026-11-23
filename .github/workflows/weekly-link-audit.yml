@@ -9,6 +9,7 @@ on:
     paths:
       - "scripts/check_links.py"
       - "scripts/validate_site.py"
+      - "scripts/audit_moshimo.py"
       - "*.html"
       - ".github/workflows/weekly-link-audit.yml"
 
@@ -27,9 +28,11 @@ jobs:
         with:
           python-version: "3.11"
       - name: Validate monitoring scripts syntax
-        run: python -m py_compile scripts/check_links.py scripts/validate_site.py
+        run: python -m py_compile scripts/check_links.py scripts/validate_site.py scripts/audit_moshimo.py
       - name: Validate the nine published categories
         run: python scripts/validate_site.py
+      - name: Check issued Moshimo affiliate cards and create review queue
+        run: python scripts/audit_moshimo.py
       - name: Check internal links and product-page responses
         id: audit
         continue-on-error: true
@@ -40,6 +43,10 @@ jobs:
         run: |
           if [ -f link-check-report.md ]; then
             cat link-check-report.md >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            if [ -f moshimo-audit-report.md ]; then
+              cat moshimo-audit-report.md >> "$GITHUB_STEP_SUMMARY"
+            fi
           else
             echo "The report was not generated." >> "$GITHUB_STEP_SUMMARY"
           fi
@@ -51,6 +58,8 @@ jobs:
           path: |
             link-check-report.md
             link-check-report.json
+            moshimo-audit-report.md
+            moshimo-audit-report.json
           if-no-files-found: warn
           retention-days: 30
       - name: Signal broken internal links
